@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Register</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: 'Poppins', sans-serif;
+      transition: background 0.5s ease, color 0.5s ease;
+    }
+    body.light-mode {
+      background: #f1f1f1;
+      color: #333;
+    }
+    body.dark-mode {
+      background: #121212;
+      color: #f1f1f1;
+    }
+
+    .user_card {
+      width: 400px;
+      background: var(--card-bg);
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      transition: background 0.5s ease;
+    }
+
+    .form_container {
+      width: 100%;
+    }
+
+    #form-title {
+      font-weight: 600;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .input-group-text {
+      background: #007bff;
+      color: white;
+      border: none;
+    }
+
+    .form-control {
+      height: 45px;
+      transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+      box-shadow: 0 0 5px rgba(0,123,255,0.6);
+    }
+
+    .login_btn {
+      background: #007bff;
+      color: white;
+      font-weight: 600;
+      transition: background 0.3s ease;
+    }
+
+    .login_btn:hover {
+      background: #0056b3;
+    }
+
+    .toggle-password {
+      cursor: pointer;
+    }
+
+    .mode-toggle {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      border: none;
+      background: transparent;
+      color: white;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    .light-mode .mode-toggle {
+      color: #333;
+    }
+
+    .dark-mode .user_card {
+      background: #1e1e1e;
+    }
+
+    .light-mode .user_card {
+      background: white;
+    }
+  </style>
+</head>
+<body class="light-mode">
+  <button class="mode-toggle" onclick="toggleMode()">
+    <i class="fas fa-moon"></i>
+  </button>
+  <div class="container h-100 d-flex justify-content-center align-items-center">
+    <div class="user_card">
+      <h3 id="form-title">REGISTER ACCOUNT</h3>
+      <div class="form_container">
+        <form method="POST" action="">
+          {% csrf_token %}
+          <div class="input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text"><i class="fas fa-user"></i></span>
+            </div>
+            <input type="text" name="username" class="form-control" placeholder="Username...">
+          </div>
+          <div class="input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+            </div>
+            <input type="email" name="email" class="form-control" placeholder="Email...">
+          </div>
+          <div class="input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text"><i class="fas fa-key"></i></span>
+            </div>
+            <input type="password" name="password1" class="form-control" placeholder="Enter password..." id="password1">
+            <div class="input-group-append">
+              <span class="input-group-text toggle-password" onclick="togglePassword('password1', this)">
+                <i class="fas fa-eye"></i>
+              </span>
+            </div>
+          </div>
+          <div class="input-group mb-4">
+            <div class="input-group-prepend">
+              <span class="input-group-text"><i class="fas fa-key"></i></span>
+            </div>
+            <input type="password" name="password2" class="form-control" placeholder="Re-enter password..." id="password2">
+            <div class="input-group-append">
+              <span class="input-group-text toggle-password" onclick="togglePassword('password2', this)">
+                <i class="fas fa-eye"></i>
+              </span>
+            </div>
+          </div>
+          <div class="d-flex justify-content-center">
+            <input class="btn login_btn btn-block" type="submit" value="Register Account">
+          </div>
+        </form>
+        <div class="mt-4 text-center">
+          Already have an account? <a href="{% url 'login' %}">Login</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function togglePassword(id, icon) {
+      const input = document.getElementById(id);
+      const eye = icon.querySelector('i');
+      if (input.type === "password") {
+        input.type = "text";
+        eye.classList.remove("fa-eye");
+        eye.classList.add("fa-eye-slash");
+      } else {
+        input.type = "password";
+        eye.classList.remove("fa-eye-slash");
+        eye.classList.add("fa-eye");
+      }
+    }
+
+    function toggleMode() {
+      const body = document.body;
+      const icon = document.querySelector('.mode-toggle i');
+      body.classList.toggle('dark-mode');
+      body.classList.toggle('light-mode');
+      icon.classList.toggle('fa-moon');
+      icon.classList.toggle('fa-sun');
+    }
+  </script>
+</body>
+</html>

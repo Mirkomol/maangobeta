@@ -1,0 +1,97 @@
+
+{% extends 'mainapp/base.html' %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+  <div class="hero-content">
+    <h1>Master Algorithms, Ace Interviews</h1>
+    <p>Join thousands of developers leveling up their skills with our interactive coding platform and community.</p>
+    {% if not user.is_authenticated %}
+    <a href="{% url 'register' %}" class="btn btn-primary-custom btn-lg">
+      <i class="fas fa-user-plus"></i> Start Coding Now
+    </a>
+    {% else %}
+    <a href="{% url 'problems' %}" class="btn btn-primary-custom btn-lg">
+      <i class="fas fa-code"></i> Practice Problems
+    </a>
+    {% endif %}
+  </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section">
+  <div class="section-title">
+    <h2>Why Developers Choose Maango</h2>
+    <p>Our platform is designed to help you master the skills needed for top tech companies through hands-on practice and community support.</p>
+  </div>
+
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">
+        <i class="fas fa-laptop-code"></i>
+      </div>
+      <h3>Interactive Coding</h3>
+      <p>Solve real-world problems with our browser-based IDE featuring instant feedback and solution analysis.</p>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon">
+        <i class="fas fa-project-diagram"></i>
+      </div>
+      <h3>Algorithm Mastery</h3>
+      <p>Comprehensive guides and challenges covering all fundamental algorithms and data structures.</p>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon">
+        <i class="fas fa-chart-line"></i>
+      </div>
+      <h3>Progress Tracking</h3>
+      <p>Detailed analytics to track your improvement and identify areas needing more practice.</p>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon">
+        <i class="fas fa-users"></i>
+      </div>
+      <h3>Community Support</h3>
+      <p>Learn from and collaborate with thousands of developers in our active discussion forums.</p>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon">
+        <i class="fas fa-trophy"></i>
+      </div>
+      <h3>Coding Contests</h3>
+      <p>Regular competitions to test your skills against others and climb the leaderboard.</p>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon">
+        <i class="fas fa-briefcase"></i>
+      </div>
+      <h3>Interview Prep</h3>
+      <p>Curated problem sets and mock interviews to prepare you for technical interviews.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+  <div class="cta-content">
+    <h2>Ready to Accelerate Your Learning?</h2>
+    <p>Join our community of developers and take your coding skills to the next level with our comprehensive learning platform.</p>
+    {% if not user.is_authenticated %}
+    <a href="{% url 'register' %}" class="btn-cta">
+      <i class="fas fa-user-plus"></i> Create Free Account
+    </a>
+    {% else %}
+    <a href="{% url 'problems' %}" class="btn-cta">
+      <i class="fas fa-code"></i> Explore Problems
+    </a>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}
+

@@ -1,0 +1,588 @@
+{% extends 'mainapp/base.html' %}
+
+{% block content %}
+<!-- Include FontAwesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- Include Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+    :root {
+        --primary-color: #3a86ff;
+        --primary-hover: #2667cc;
+        --secondary-color: #8338ec;
+        --background-dark: #1a1a2e;
+        --card-dark: #16213e;
+        --text-primary: #e2e2e2;
+        --text-secondary: #b8b8b8;
+        --success-color: #06d6a0;
+        --danger-color: #ef476f;
+        --warning-color: #ffd166;
+        --border-radius: 8px;
+        --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: var(--background-dark);
+        color: var(--text-primary);
+        line-height: 1.6;
+    }
+
+    .discussion-container {
+        max-width: 900px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+
+    .forum-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .forum-title {
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin-bottom: 10px;
+        background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .forum-subtitle {
+        color: var(--text-secondary);
+        font-size: 1rem;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .search-container {
+        margin-bottom: 30px;
+        position: relative;
+    }
+
+    .search-input {
+        width: 100%;
+        padding: 14px 20px;
+        padding-left: 50px;
+        border: none;
+        border-radius: var(--border-radius);
+        background-color: var(--card-dark);
+        color: var(--text-primary);
+        font-size: 1rem;
+        box-shadow: var(--box-shadow);
+        transition: all 0.3s ease;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .search-input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 2px rgba(58, 134, 255, 0.2);
+    }
+
+    .search-icon {
+        position: absolute;
+        left: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-secondary);
+    }
+
+    .post-form-container {
+        background-color: var(--card-dark);
+        border-radius: var(--border-radius);
+        padding: 25px;
+        margin-bottom: 30px;
+        box-shadow: var(--box-shadow);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .post-form-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .user-avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        margin-right: 15px;
+        object-fit: cover;
+        border: 2px solid var(--primary-color);
+    }
+
+    .avatar-placeholder {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        margin-right: 15px;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        font-size: 1.2rem;
+        border: 2px solid var(--primary-color);
+    }
+
+    .post-form-content {
+        flex-grow: 1;
+    }
+
+    .post-textarea {
+        width: 100%;
+        min-height: 100px;
+        padding: 15px;
+        border-radius: var(--border-radius);
+        background-color: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: var(--text-primary);
+        font-size: 1rem;
+        resize: none;
+        transition: all 0.3s ease;
+        margin-bottom: 15px;
+    }
+
+    .post-textarea:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 2px rgba(58, 134, 255, 0.2);
+    }
+
+    .post-topic-input {
+        width: 100%;
+        padding: 12px 15px;
+        border-radius: var(--border-radius);
+        background-color: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: var(--text-primary);
+        font-size: 0.9rem;
+        margin-bottom: 15px;
+    }
+
+    .post-submit-btn {
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: var(--border-radius);
+        font-size: 0.95rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        box-shadow: 0 2px 10px rgba(58, 134, 255, 0.3);
+    }
+
+    .post-submit-btn:hover {
+        background-color: var(--primary-hover);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(58, 134, 255, 0.4);
+    }
+
+    .post-submit-btn i {
+        margin-right: 8px;
+    }
+
+    .post-card {
+        background-color: var(--card-dark);
+        border-radius: var(--border-radius);
+        padding: 25px;
+        margin-bottom: 25px;
+        box-shadow: var(--box-shadow);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .post-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    .post-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    .post-user-info {
+        margin-left: 15px;
+    }
+
+    .post-author {
+        font-weight: 600;
+        color: var(--primary-color);
+        font-size: 1.1rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .post-time {
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+        margin-top: 3px;
+    }
+
+    .post-content {
+        font-size: 1.05rem;
+        line-height: 1.7;
+        margin: 15px 0;
+        white-space: pre-line;
+    }
+
+    .post-topic {
+        display: inline-block;
+        background-color: rgba(58, 134, 255, 0.15);
+        color: var(--primary-color);
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        margin-bottom: 15px;
+    }
+
+    .post-actions {
+        display: flex;
+        align-items: center;
+        margin-top: 20px;
+        padding-top: 15px;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .action-btn {
+        background: none;
+        border: none;
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        margin-right: 20px;
+        padding: 5px 10px;
+        border-radius: 4px;
+        transition: all 0.2s ease;
+    }
+
+    .action-btn:hover {
+        color: var(--primary-color);
+        background-color: rgba(58, 134, 255, 0.1);
+    }
+
+    .action-btn i {
+        margin-right: 6px;
+        font-size: 1rem;
+    }
+
+    .action-count {
+        margin-left: 5px;
+        font-weight: 500;
+    }
+
+    .comment-section {
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .comment {
+        display: flex;
+        margin-bottom: 15px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .comment:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+
+    .comment-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        margin-right: 12px;
+        object-fit: cover;
+    }
+
+    .comment-content {
+        flex-grow: 1;
+    }
+
+    .comment-author {
+        font-weight: 600;
+        color: var(--primary-color);
+        font-size: 0.95rem;
+    }
+
+    .comment-text {
+        font-size: 0.95rem;
+        margin-top: 5px;
+        line-height: 1.5;
+    }
+
+    .comment-time {
+        color: var(--text-secondary);
+        font-size: 0.8rem;
+        margin-top: 5px;
+    }
+
+    .comment-form {
+        margin-top: 20px;
+    }
+
+    .comment-textarea {
+        width: 100%;
+        min-height: 80px;
+        padding: 12px 15px;
+        border-radius: var(--border-radius);
+        background-color: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: var(--text-primary);
+        font-size: 0.95rem;
+        resize: none;
+        margin-bottom: 10px;
+    }
+
+    .comment-submit-btn {
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: var(--border-radius);
+        font-size: 0.9rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .comment-submit-btn:hover {
+        background-color: var(--primary-hover);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 50px 20px;
+        color: var(--text-secondary);
+    }
+
+    .empty-state i {
+        font-size: 3rem;
+        margin-bottom: 20px;
+        color: var(--primary-color);
+        opacity: 0.5;
+    }
+
+    .empty-state h3 {
+        font-size: 1.5rem;
+        margin-bottom: 10px;
+        color: var(--text-primary);
+    }
+
+    @media (max-width: 768px) {
+        .discussion-container {
+            padding: 0 15px;
+        }
+
+        .forum-title {
+            font-size: 1.8rem;
+        }
+
+        .post-form-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .user-avatar, .avatar-placeholder {
+            margin-bottom: 15px;
+            margin-right: 0;
+        }
+
+        .post-actions {
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            margin-bottom: 10px;
+        }
+    }
+</style>
+
+<div class="discussion-container">
+    <div class="forum-header">
+        <h1 class="forum-title">Community Discussions</h1>
+        <p class="forum-subtitle">Ask questions, share solutions, and connect with other developers</p>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="search-container">
+        <i class="fas fa-search search-icon"></i>
+        <form method="get">
+            <input type="text" name="q" value="{{ search_query }}" class="search-input"
+                   placeholder="Search discussions by topic, content, or author...">
+        </form>
+    </div>
+
+    <!-- Add Post Form -->
+    {% if user.is_authenticated %}
+    <div class="post-form-container">
+        <form method="post">
+            {% csrf_token %}
+            <div class="post-form-header">
+                {% if user_profile and user_profile.avatar %}
+                    <img src="{{ user_profile.avatar.url }}" class="user-avatar" alt="{{ user.username }}">
+                {% else %}
+                    <div class="avatar-placeholder">
+                        {{ request.user.username|first|upper }}
+                    </div>
+                {% endif %}
+                <div class="post-form-content">
+                    <textarea name="content" class="post-textarea"
+                              placeholder="What coding challenge are you facing today? Be specific and include relevant details..."
+                              rows="3" required></textarea>
+                    <input type="text" name="topic" class="post-topic-input"
+                           placeholder="Add a topic tag (e.g., Python, Algorithms, System Design)">
+                    <button type="submit" class="post-submit-btn">
+                        <i class="fas fa-paper-plane"></i> Post Question
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+    {% else %}
+    <div class="post-form-container" style="text-align: center; padding: 30px;">
+        <p style="margin-bottom: 15px;">Join the discussion!</p>
+        <a href="{% url 'login' %}" class="post-submit-btn">
+            <i class="fas fa-sign-in-alt"></i> Sign In to Participate
+        </a>
+    </div>
+    {% endif %}
+
+    <!-- List of Posts -->
+    {% if posts %}
+        {% for post in posts %}
+        <div class="post-card">
+            <div class="post-header">
+                {% if post.author.userprofile.avatar %}
+                    <img src="{{ post.author.userprofile.avatar.url }}" class="user-avatar" alt="{{ post.author.username }}">
+                {% else %}
+                    <div class="avatar-placeholder">
+                        {{ post.author.username}}
+                    </div>
+                {% endif %}
+                <div class="post-user-info">
+                    <div class="post-author">
+                        {{ post.author.username }}
+                        {% if post.author.is_staff %}
+                            <span style="margin-left: 8px; font-size: 0.7rem; background: var(--success-color); color: white; padding: 2px 6px; border-radius: 4px;">STAFF</span>
+                        {% endif %}
+                    </div>
+                    <div class="post-time">
+                        <i class="far fa-clock"></i> {{ post.created_at|timesince }} ago
+                    </div>
+                </div>
+            </div>
+
+            {% if post.topic %}
+                <div class="post-topic">
+                    <i class="fas fa-tag"></i> {{ post.topic }}
+                </div>
+            {% endif %}
+
+            <div class="post-content">
+                {{ post.content|linebreaksbr }}
+            </div>
+
+            <div class="post-actions">
+                <button class="action-btn">
+                    <i class="far fa-thumbs-up"></i>
+                    <span class="action-count">24</span>
+                </button>
+                <button class="action-btn">
+                    <i class="far fa-comment"></i>
+                    <span class="action-count">{{ post.comments.count }}</span>
+                </button>
+                <button class="action-btn">
+                    <i class="fas fa-share"></i>
+                    <span class="action-count">Share</span>
+                </button>
+            </div>
+
+            <!-- Comments Section -->
+            <div class="comment-section">
+                <h4 style="font-size: 1rem; margin-bottom: 15px; color: var(--text-primary);">
+                    <i class="far fa-comments"></i> {{ post.comments.count }} Comments
+                </h4>
+
+                {% for comment in post.comments.all|slice:":3" %}
+                <div class="comment">
+                    {% if comment.author.userprofile.avatar %}
+                        <img src="{{ comment.author.userprofile.avatar.url }}" class="comment-avatar" alt="{{ comment.author.username }}">
+                    {% else %}
+                        <div class="avatar-placeholder" style="width: 36px; height: 36px; font-size: 0.9rem;">
+                            {{ comment.author.username|first|upper }}
+                        </div>
+                    {% endif %}
+                    <div class="comment-content">
+                        <div class="comment-author">{{ comment.author.username }}</div>
+                        <div class="comment-text">{{ comment.content }}</div>
+                        <div class="comment-time">{{ comment.created_at|timesince }} ago</div>
+                    </div>
+                </div>
+                {% endfor %}
+
+                {% if post.comments.count > 3 %}
+                <div style="text-align: center; margin: 15px 0;">
+                    <button class="action-btn" style="margin: 0 auto;">
+                        <i class="fas fa-chevron-down"></i> Show {{ post.comments.count|add:"-3" }} more comments
+                    </button>
+                </div>
+                {% endif %}
+
+                {% if user.is_authenticated %}
+                <form method="post" action="{% url 'add_comment' post.id %}" class="comment-form">
+                    {% csrf_token %}
+                    <textarea name="content" class="comment-textarea" placeholder="Write your comment..." required></textarea>
+                    <button type="submit" class="comment-submit-btn">
+                        <i class="fas fa-paper-plane"></i> Post Comment
+                    </button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="empty-state">
+            <i class="fas fa-comments"></i>
+            <h3>No discussions yet</h3>
+            <p>Be the first to start a conversation!</p>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Simple animation for post cards when they come into view
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = 1;
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.post-card').forEach(card => {
+        card.style.opacity = 0;
+        card.style.transform = 'translateY(20px)';
+        card.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+        observer.observe(card);
+    });
+});
+</script>
+{% endblock %}

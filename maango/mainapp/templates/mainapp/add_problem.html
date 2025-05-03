@@ -1,0 +1,91 @@
+{% extends 'mainapp/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="form-container">
+        <!-- Form Header -->
+        <h1 class="text-center form-title">Add New Problem</h1>
+        <p class="text-center form-subtitle">
+            Fill in the details below to create a new problem for your users.
+        </p>
+
+        <!-- Form Body -->
+        <form method="POST" class="form-content">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn-submit">Add Problem</button>
+        </form>
+    </div>
+</div>
+
+<style>
+    body {
+        font-family: 'Poppins', sans-serif;
+        background-color: #121212;
+        color: #e0e0e0;
+    }
+    .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+    }
+    .form-container {
+        background: #1e1e1e;
+        padding: 40px 30px;
+        border-radius: 15px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        max-width: 600px;
+        width: 100%;
+    }
+    .form-title {
+        font-size: 28px;
+        color: #03dac5;
+        margin-bottom: 15px;
+    }
+    .form-subtitle {
+        color: #b0bec5;
+        font-size: 16px;
+        margin-bottom: 30px;
+    }
+    .form-content {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+    .form-content input,
+    .form-content textarea,
+    .form-content select {
+        width: 100%;
+        padding: 10px 15px;
+        border: 1px solid #3a3a3a;
+        border-radius: 5px;
+        background: #121212;
+        color: #e0e0e0;
+        font-size: 16px;
+    }
+    .form-content input:focus,
+    .form-content textarea:focus,
+    .form-content select:focus {
+        border-color: #03dac5;
+        outline: none;
+        box-shadow: 0 0 8px rgba(3, 218, 197, 0.5);
+    }
+    .btn-submit {
+        padding: 12px 20px;
+        background: #03dac5;
+        color: #121212;
+        border: none;
+        border-radius: 25px;
+        font-size: 18px;
+        font-weight: bold;
+        text-align: center;
+        cursor: pointer;
+        transition: background-color 0.3s, transform 0.2s;
+    }
+    .btn-submit:hover {
+        background-color: #0288d1;
+        transform: translateY(-2px);
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,439 @@
+{% extends 'mainapp/base.html' %}
+
+{% block content %}
+<style>
+    :root {
+        --primary: #6a11cb;
+        --secondary: #2575fc;
+        --accent: #03dac5;
+        --text-primary: #e0e0e0;
+        --bg-primary: #121212;
+        --bg-secondary: #1e1e1e;
+        --bg-tertiary: #2d2d2d;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --danger: #ef4444;
+        --info: #3b82f6;
+    }
+
+    .admin-container {
+        max-width: 1400px;
+        margin: 2rem auto;
+        padding: 2rem;
+    }
+
+    .dashboard-header {
+        margin-bottom: 2rem;
+    }
+
+    .dashboard-header h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        background: linear-gradient(90deg, var(--primary), var(--secondary));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        margin-bottom: 1rem;
+    }
+
+    .dashboard-header p {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: var(--bg-secondary);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease;
+        border-left: 4px solid;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .stat-card.users {
+        border-color: var(--primary);
+    }
+
+    .stat-card.problems {
+        border-color: var(--success);
+    }
+
+    .stat-card.courses {
+        border-color: var(--info);
+    }
+
+    .stat-card.forum {
+        border-color: var(--warning);
+    }
+
+    .stat-value {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+        font-size: 1rem;
+        color: var(--text-secondary);
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-change {
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .stat-change.positive {
+        color: var(--success);
+    }
+
+    .stat-change.negative {
+        color: var(--danger);
+    }
+
+    .chart-container {
+        background: var(--bg-secondary);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .chart-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .chart-header h2 {
+        font-size: 1.5rem;
+        font-weight: 600;
+    }
+
+    .chart-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .chart-btn {
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        background: var(--bg-tertiary);
+        color: var(--text-primary);
+        border: none;
+        cursor: pointer;
+        font-size: 0.9rem;
+        transition: all 0.2s;
+    }
+
+    .chart-btn:hover {
+        background: var(--primary);
+    }
+
+    .chart-placeholder {
+        height: 300px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--bg-tertiary);
+        border-radius: 8px;
+        color: var(--text-secondary);
+    }
+
+    .recent-activity {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .activity-card {
+        background: var(--bg-secondary);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .activity-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--bg-tertiary);
+    }
+
+    .activity-header h2 {
+        font-size: 1.25rem;
+        font-weight: 600;
+    }
+
+    .activity-item {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid var(--bg-tertiary);
+    }
+
+    .activity-item:last-child {
+        border-bottom: none;
+    }
+
+    .activity-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+        color: white;
+        font-weight: 600;
+    }
+
+    .activity-content {
+        flex: 1;
+    }
+
+    .activity-title {
+        font-weight: 500;
+        margin-bottom: 0.25rem;
+    }
+
+    .activity-time {
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+    }
+
+    .activity-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        background: rgba(59, 130, 246, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--info);
+        font-size: 1.25rem;
+    }
+
+    .difficulty-badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 100px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .badge-easy {
+        background: rgba(16, 185, 129, 0.1);
+        color: var(--success);
+    }
+
+    .badge-medium {
+        background: rgba(245, 158, 11, 0.1);
+        color: var(--warning);
+    }
+
+    .badge-hard {
+        background: rgba(239, 68, 68, 0.1);
+        color: var(--danger);
+    }
+
+    @media (max-width: 768px) {
+        .stats-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .recent-activity {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+        }
+    }
+</style>
+
+<div class="admin-container">
+    <div class="dashboard-header">
+        <h1>Admin Dashboard</h1>
+        <p>Overview of platform statistics and recent activity</p>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+        <div class="stat-card users">
+            <div class="stat-value">{{ total_users }}</div>
+            <div class="stat-label">Total Users</div>
+            <div class="stat-change positive">
+                <i class="fas fa-arrow-up"></i>
+                {{ new_users_today }} new today
+            </div>
+        </div>
+
+        <div class="stat-card problems">
+            <div class="stat-value">{{ total_problems }}</div>
+            <div class="stat-label">Coding Problems</div>
+            <div class="stat-change">
+                {% for diff in problems_by_difficulty %}
+                <span class="difficulty-badge badge-{{ diff.difficulty|lower }}">{{ diff.count }} {{ diff.difficulty }}</span>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="stat-card courses">
+            <div class="stat-value">{{ total_courses }}</div>
+            <div class="stat-label">Courses</div>
+            <div class="stat-change">
+                {{ total_modules }} modules
+            </div>
+        </div>
+
+        <div class="stat-card forum">
+            <div class="stat-value">{{ total_posts }}</div>
+            <div class="stat-label">Forum Posts</div>
+            <div class="stat-change">
+                {{ total_comments }} comments
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="chart-container">
+        <div class="chart-header">
+            <h2>User Growth</h2>
+            <div class="chart-actions">
+                <button class="chart-btn">7 Days</button>
+                <button class="chart-btn active">30 Days</button>
+                <button class="chart-btn">All Time</button>
+            </div>
+        </div>
+        <div class="chart-placeholder">
+            <i class="fas fa-chart-line fa-3x"></i>
+            <p>User growth chart would be displayed here</p>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="recent-activity">
+        <div class="activity-card">
+            <div class="activity-header">
+                <h2>Recent Users</h2>
+                <a href="{% url 'admin:auth_user_changelist' %}" class="chart-btn">View All</a>
+            </div>
+            
+            {% for user in recent_users %}
+            <div class="activity-item">
+                <div class="activity-avatar">
+                    {{ user.username|first|upper }}
+                </div>
+                <div class="activity-content">
+                    <div class="activity-title">@{{ user.username }}</div>
+                    <div class="activity-time">Joined {{ user.date_joined|timesince }} ago</div>
+                </div>
+                <div class="activity-icon">
+                    <i class="fas fa-user"></i>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="activity-card">
+            <div class="activity-header">
+              
+            </div>
+            
+            {% for solution in recent_solutions %}
+            <div class="activity-item">
+                <div class="activity-avatar" style="background: {% if solution.problem.difficulty == 'Easy' %}var(--success){% elif solution.problem.difficulty == 'Medium' %}var(--warning){% else %}var(--danger){% endif %}">
+                    {{ solution.problem.title|first|upper }}
+                </div>
+                <div class="activity-content">
+                    <div class="activity-title">{{ solution.problem.title }}</div>
+                    <div class="activity-time">Solved {{ solution.solved_at|timesince }} ago by @{{ solution.user.user.username }}</div>
+                </div>
+                <div class="activity-icon">
+                    <span class="difficulty-badge badge-{{ solution.problem.difficulty|lower }}">{{ solution.problem.difficulty }}</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="activity-card">
+            <div class="activity-header">
+                <h2>Recent Forum Posts</h2>
+                <a href="{% url 'admin:mainapp_post_changelist' %}" class="chart-btn">View All</a>
+            </div>
+            
+            {% for post in recent_posts %}
+            <div class="activity-item">
+                <div class="activity-avatar" style="background: var(--secondary)">
+                    {{ post.author.username|first|upper }}
+                </div>
+                <div class="activity-content">
+                    <div class="activity-title">{{ post.topic|default:"No topic" }}</div>
+                    <div class="activity-time">Posted {{ post.created_at|timesince }} ago by @{{ post.author.username }}</div>
+                </div>
+                <div class="activity-icon">
+                    <i class="fas fa-comment"></i>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Chart buttons functionality
+    const chartBtns = document.querySelectorAll('.chart-btn');
+    chartBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            chartBtns.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            // Here you would typically fetch new chart data
+        });
+    });
+
+    // Animate stat cards on scroll
+    const statCards = document.querySelectorAll('.stat-card');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, { threshold: 0.1 });
+
+    statCards.forEach(card => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        card.style.transition = 'all 0.5s ease';
+        observer.observe(card);
+    });
+});
+</script>
+{% endblock %}

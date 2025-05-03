@@ -1,0 +1,363 @@
+{% extends 'mainapp/base.html' %}
+{% block content %}
+
+<style>
+  /* Leaderboard Container */
+  .leaderboard-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+    color: var(--text-primary);
+  }
+  
+  /* Tabs */
+  .leaderboard-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 2rem;
+  }
+  
+  .leaderboard-tab {
+    padding: 0.75rem 1.5rem;
+    cursor: pointer;
+    font-weight: 500;
+    border-bottom: 3px solid transparent;
+    transition: all 0.3s ease;
+  }
+  
+  .leaderboard-tab.active {
+    border-bottom-color: var(--accent);
+    color: var(--accent);
+  }
+  
+  .leaderboard-tab:hover:not(.active) {
+    background-color: var(--bg-tertiary);
+  }
+  
+  /* Table */
+  .leaderboard-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: var(--bg-secondary);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .leaderboard-table th {
+    background-color: var(--bg-tertiary);
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+  }
+  
+  .leaderboard-table td {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+  }
+  
+  .leaderboard-table tr:last-child td {
+    border-bottom: none;
+  }
+  
+  .leaderboard-table tr:hover {
+    background-color: var(--bg-tertiary);
+  }
+  
+  /* Rank Badges */
+  .rank-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-weight: 600;
+    margin-right: 0.5rem;
+  }
+  
+  .rank-1 {
+    background: linear-gradient(135deg, #FFD700, #D4AF37);
+    color: #000;
+  }
+  
+  .rank-2 {
+    background: linear-gradient(135deg, #C0C0C0, #A8A8A8);
+    color: #000;
+  }
+  
+  .rank-3 {
+    background: linear-gradient(135deg, #CD7F32, #A67C52);
+    color: #000;
+  }
+  
+  .rank-other {
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+  }
+  
+  /* User Cell */
+  .user-cell {
+    display: flex;
+    align-items: center;
+  }
+  
+  .user-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    margin-right: 0.75rem;
+    object-fit: cover;
+  }
+  
+  .user-name {
+    font-weight: 500;
+    color: var(--text-primary);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  
+  .user-name:hover {
+    color: var(--accent);
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    .leaderboard-tabs {
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+    
+    .leaderboard-table {
+      display: block;
+      overflow-x: auto;
+    }
+  }
+</style>
+
+<div class="leaderboard-container">
+  <h1 class="text-center mb-5">Leaderboard</h1>
+  
+  <div class="leaderboard-tabs">
+    <div class="leaderboard-tab active" data-tab="all-time">All Time</div>
+    <div class="leaderboard-tab" data-tab="weekly">Weekly</div>
+    <div class="leaderboard-tab" data-tab="daily">Daily</div>
+    <div class="leaderboard-tab" data-tab="streak">Streak</div>
+    <div class="leaderboard-tab" data-tab="active">Most Active</div>
+  </div>
+  
+  <!-- All Time Leaderboard -->
+  <div class="tab-content active" id="all-time">
+    <table class="leaderboard-table">
+      <thead>
+        <tr>
+          <th>Rank</th>
+          <th>User</th>
+          <th>Points</th>
+          <th>Solved</th>
+          <th>Streak</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for profile in all_time %}
+        <tr>
+          <td>
+            <div class="rank-badge 
+              {% if forloop.counter == 1 %}rank-1
+              {% elif forloop.counter == 2 %}rank-2
+              {% elif forloop.counter == 3 %}rank-3
+              {% else %}rank-other{% endif %}">
+              {{ forloop.counter }}
+            </div>
+          </td>
+          <td>
+            <a href="{% url 'user_stats' profile.user.username %}" class="user-cell">
+              <img src="{{ profile.avatar.url }}" alt="{{ profile.user.username }}" class="user-avatar">
+              <span class="user-name">{{ profile.user.username }}</span>
+            </a>
+          </td>
+          <td>{{ profile.total_points }}</td>
+          <td>{{ profile.problems_solved.count }}</td>
+          <td>{{ profile.streak }} days</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  
+  <!-- Weekly Leaderboard -->
+  <div class="tab-content" id="weekly" style="display: none;">
+    <table class="leaderboard-table">
+      <thead>
+        <tr>
+          <th>Rank</th>
+          <th>User</th>
+          <th>Points</th>
+          <th>Solved</th>
+          <th>Streak</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for profile in weekly %}
+        <tr>
+          <td>
+            <div class="rank-badge 
+              {% if forloop.counter == 1 %}rank-1
+              {% elif forloop.counter == 2 %}rank-2
+              {% elif forloop.counter == 3 %}rank-3
+              {% else %}rank-other{% endif %}">
+              {{ forloop.counter }}
+            </div>
+          </td>
+          <td>
+            <a href="{% url 'user_stats' profile.user.username %}" class="user-cell">
+              <img src="{{ profile.avatar.url }}" alt="{{ profile.user.username }}" class="user-avatar">
+              <span class="user-name">{{ profile.user.username }}</span>
+            </a>
+          </td>
+          <td>{{ profile.total_points }}</td>
+          <td>{{ profile.problems_solved.count }}</td>
+          <td>{{ profile.streak }} days</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  
+  <!-- Daily Leaderboard -->
+  <div class="tab-content" id="daily" style="display: none;">
+    <table class="leaderboard-table">
+      <thead>
+        <tr>
+          <th>Rank</th>
+          <th>User</th>
+          <th>Points</th>
+          <th>Solved</th>
+          <th>Streak</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for profile in daily %}
+        <tr>
+          <td>
+            <div class="rank-badge 
+              {% if forloop.counter == 1 %}rank-1
+              {% elif forloop.counter == 2 %}rank-2
+              {% elif forloop.counter == 3 %}rank-3
+              {% else %}rank-other{% endif %}">
+              {{ forloop.counter }}
+            </div>
+          </td>
+          <td>
+            <a href="{% url 'user_stats' profile.user.username %}" class="user-cell">
+              <img src="{{ profile.avatar.url }}" alt="{{ profile.user.username }}" class="user-avatar">
+              <span class="user-name">{{ profile.user.username }}</span>
+            </a>
+          </td>
+          <td>{{ profile.total_points }}</td>
+          <td>{{ profile.problems_solved.count }}</td>
+          <td>{{ profile.streak }} days</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  
+  <!-- Streak Leaderboard -->
+  <div class="tab-content" id="streak" style="display: none;">
+    <table class="leaderboard-table">
+      <thead>
+        <tr>
+          <th>Rank</th>
+          <th>User</th>
+          <th>Streak</th>
+          <th>Points</th>
+          <th>Solved</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for profile in streak %}
+        <tr>
+          <td>
+            <div class="rank-badge 
+              {% if forloop.counter == 1 %}rank-1
+              {% elif forloop.counter == 2 %}rank-2
+              {% elif forloop.counter == 3 %}rank-3
+              {% else %}rank-other{% endif %}">
+              {{ forloop.counter }}
+            </div>
+          </td>
+          <td>
+            <a href="{% url 'user_stats' profile.user.username %}" class="user-cell">
+              <img src="{{ profile.avatar.url }}" alt="{{ profile.user.username }}" class="user-avatar">
+              <span class="user-name">{{ profile.user.username }}</span>
+            </a>
+          </td>
+          <td>{{ profile.streak }} days</td>
+          <td>{{ profile.total_points }}</td>
+          <td>{{ profile.problems_solved.count }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  
+  <!-- Most Active Leaderboard -->
+  <div class="tab-content" id="active" style="display: none;">
+    <table class="leaderboard-table">
+      <thead>
+        <tr>
+          <th>Rank</th>
+          <th>User</th>
+          <th>Solved</th>
+          <th>Points</th>
+          <th>Streak</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for profile in active %}
+        <tr>
+          <td>
+            <div class="rank-badge 
+              {% if forloop.counter == 1 %}rank-1
+              {% elif forloop.counter == 2 %}rank-2
+              {% elif forloop.counter == 3 %}rank-3
+              {% else %}rank-other{% endif %}">
+              {{ forloop.counter }}
+            </div>
+          </td>
+          <td>
+            <a href="{% url 'user_stats' profile.user.username %}" class="user-cell">
+              <img src="{{ profile.avatar.url }}" alt="{{ profile.user.username }}" class="user-avatar">
+              <span class="user-name">{{ profile.user.username }}</span>
+            </a>
+          </td>
+          <td>{{ profile.solve_count }}</td>
+          <td>{{ profile.total_points }}</td>
+          <td>{{ profile.streak }} days</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  // Tab switching functionality
+  document.querySelectorAll('.leaderboard-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      // Remove active class from all tabs and content
+      document.querySelectorAll('.leaderboard-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+      
+      // Add active class to clicked tab
+      tab.classList.add('active');
+      
+      // Show corresponding content
+      const tabId = tab.getAttribute('data-tab');
+      document.getElementById(tabId).style.display = 'block';
+    });
+  });
+</script>
+
+{% endblock %}

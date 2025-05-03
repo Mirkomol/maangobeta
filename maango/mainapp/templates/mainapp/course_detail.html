@@ -1,0 +1,411 @@
+{% extends 'mainapp/base.html' %}
+
+{% block content %}
+
+<!-- FontAwesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" />
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- Enhanced CSS -->
+<style>
+    :root {
+        --primary: #3b82f6;
+        --primary-hover: #2563eb;
+        --secondary: #6366f1;
+        --accent: #10b981;
+        --dark-text: #1e293b;
+        --light-text: #64748b;
+        --card-bg: #ffffff;
+        --border-color: #e2e8f0;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --danger: #ef4444;
+        --border-radius: 12px;
+        --box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: #f8fafc;
+        color: var(--dark-text);
+        line-height: 1.6;
+    }
+
+    .course-container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
+
+    .course-header {
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: white;
+        padding: 2.5rem;
+        border-radius: var(--border-radius);
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .course-header::before {
+        content: '';
+        position: absolute;
+        top: -50px;
+        right: -50px;
+        width: 200px;
+        height: 200px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+    }
+
+    .course-header h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        position: relative;
+    }
+
+    .course-header p {
+        font-size: 1.1rem;
+        opacity: 0.9;
+        max-width: 800px;
+        margin-bottom: 1.5rem;
+    }
+
+    .course-meta {
+        display: flex;
+        gap: 1.5rem;
+        font-size: 0.9rem;
+    }
+
+    .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: rgba(255, 255, 255, 0.15);
+        padding: 0.5rem 1rem;
+        border-radius: 100px;
+    }
+
+    .modules-section {
+        background-color: var(--card-bg);
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--dark-text);
+    }
+
+    .module-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .module-card {
+        background-color: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius);
+        padding: 1.5rem;
+        transition: var(--transition);
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    .module-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        border-color: var(--primary);
+    }
+
+    .module-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+    }
+
+    .module-number {
+        font-size: 0.9rem;
+        color: var(--light-text);
+        font-weight: 500;
+    }
+
+    .module-status {
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 0.25rem 0.75rem;
+        border-radius: 100px;
+        background-color: rgba(16, 185, 129, 0.1);
+        color: var(--success);
+    }
+
+    .module-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--dark-text);
+        margin-bottom: 0.75rem;
+        text-decoration: none;
+        transition: var(--transition);
+    }
+
+    .module-title:hover {
+        color: var(--primary);
+    }
+
+    .module-description {
+        color: var(--light-text);
+        font-size: 0.95rem;
+        margin-bottom: 1.5rem;
+        flex-grow: 1;
+    }
+
+    .module-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: auto;
+    }
+
+    .module-meta {
+        display: flex;
+        gap: 1rem;
+        font-size: 0.85rem;
+        color: var(--light-text);
+    }
+
+    .module-meta span {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .btn-view {
+        padding: 0.5rem 1rem;
+        border-radius: var(--border-radius);
+        background-color: rgba(59, 130, 246, 0.1);
+        color: var(--primary);
+        font-weight: 600;
+        font-size: 0.9rem;
+        text-decoration: none;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-view:hover {
+        background-color: var(--primary);
+        color: white;
+    }
+
+    .empty-state {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 3rem;
+        background-color: var(--card-bg);
+        border-radius: var(--border-radius);
+        border: 2px dashed var(--border-color);
+    }
+
+    .empty-state i {
+        font-size: 3rem;
+        color: var(--light-text);
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+
+    .empty-state h3 {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+        color: var(--dark-text);
+    }
+
+    .empty-state p {
+        color: var(--light-text);
+        margin-bottom: 1.5rem;
+    }
+
+    .btn-add {
+        padding: 0.75rem 1.5rem;
+        border-radius: var(--border-radius);
+        background-color: var(--success);
+        color: white;
+        font-weight: 600;
+        text-decoration: none;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-add:hover {
+        background-color: #0d9f6e;
+        transform: translateY(-2px);
+    }
+
+    .progress-container {
+        margin-top: 1.5rem;
+    }
+
+    .progress-label {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+        color: var(--light-text);
+    }
+
+    .progress-bar {
+        height: 8px;
+        background-color: #e2e8f0;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--primary), var(--secondary));
+        border-radius: 4px;
+        width: 65%;
+        transition: width 0.5s ease;
+    }
+
+    @media (max-width: 768px) {
+        .course-header h1 {
+            font-size: 2rem;
+        }
+
+        .course-meta {
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .module-list {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="course-container">
+    <div class="course-header">
+        <h1>{{ course.title }}</h1>
+        <p>{{ course.description }}</p>
+
+        <div class="course-meta">
+            <span class="meta-item">
+                <i class="fas fa-book-open"></i>
+                {{ course.modules_list.count }} Modules
+            </span>
+            <span class="meta-item">
+                <i class="fas fa-clock"></i>
+                {{ course.total_duration }} Hours
+            </span>
+            <span class="meta-item">
+                <i class="fas fa-layer-group"></i>
+                {{ course.difficulty_level }}
+            </span>
+        </div>
+
+        <div class="progress-container">
+            <div class="progress-label">
+                <span>Course Progress</span>
+                <span>65% Complete</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+        </div>
+    </div>
+
+
+
+        {% if course.modules_list.all %}
+        <div class="module-list">
+            {% for module in course.modules_list.all %}
+            <div class="module-card">
+                <div class="module-header">
+                    <span class="module-number">Module {{ forloop.counter }}</span>
+                    <span class="module-status">Active</span>
+                </div>
+
+                <a href="{% url 'module_detail' module.id %}" class="module-title">
+                    {{ module.title }}
+                </a>
+
+                <p class="module-description">
+                    {{ module.description|truncatechars:120|default:"No description provided" }}
+                </p>
+
+                <div class="module-footer">
+                    <div class="module-meta">
+                        <span>
+                            <i class="far fa-clock"></i>
+                            {{ module.duration }} min
+                        </span>
+                        <span>
+                            <i class="far fa-file-alt"></i>
+                            {{ module.lessons.count }} lessons
+                        </span>
+                    </div>
+
+                    <a href="{% url 'module_detail' module.id %}" class="btn-view">
+                        View <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    // Animate progress bar on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        const progressFill = document.querySelector('.progress-fill');
+        if (progressFill) {
+            progressFill.style.width = '0';
+            setTimeout(() => {
+                progressFill.style.width = '65%';
+            }, 100);
+        }
+
+        // Add animation to module cards when they come into view
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry, index) => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, { threshold: 0.1 });
+
+        const moduleCards = document.querySelectorAll('.module-card');
+        moduleCards.forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = `opacity 0.5s ease ${index * 0.1}s, transform 0.5s ease ${index * 0.1}s`;
+            observer.observe(card);
+        });
+    });
+</script>
+
+{% endblock %}

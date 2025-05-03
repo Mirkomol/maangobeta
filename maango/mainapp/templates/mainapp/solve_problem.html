@@ -1,0 +1,521 @@
+{% extends 'mainapp/base.html' %}
+{% block content %}
+
+<!-- CodeMirror for syntax highlighting -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/dracula.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/python/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/javascript/javascript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/clike/clike.min.js"></script>
+
+<style>
+    :root {
+        --primary-bg: #1a1a1a;
+        --secondary-bg: #2d2d2d;
+        --tertiary-bg: #252525;
+        --code-bg: #1e1e1e;
+        --text-primary: #e0e0e0;
+        --text-secondary: #b0b0b0;
+        --accent-blue: #1795ff;
+        --accent-green: #28a745;
+        --accent-yellow: #ffc107;
+        --accent-red: #dc3545;
+        --border-color: #3d3d3d;
+        --success-bg: rgba(40, 167, 69, 0.15);
+        --error-bg: rgba(220, 53, 69, 0.15);
+    }
+
+    .solve-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 20px;
+        height: calc(100vh - 100px);
+    }
+
+    .problem-panel {
+        background-color: var(--secondary-bg);
+        border-radius: 8px;
+        padding: 20px;
+        overflow-y: auto;
+        border: 1px solid var(--border-color);
+    }
+
+    .editor-panel {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .editor-container {
+        background-color: var(--secondary-bg);
+        border-radius: 8px;
+        padding: 15px;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid var(--border-color);
+    }
+
+    .editor-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+    .language-selector {
+        background-color: var(--tertiary-bg);
+        color: var(--text-primary);
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        padding: 8px 12px;
+        font-size: 14px;
+    }
+
+    .CodeMirror {
+        height: 100% !important;
+        border-radius: 6px;
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
+    .editor-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .run-btn, .submit-btn {
+        padding: 8px 16px;
+        border-radius: 4px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .run-btn {
+        background-color: var(--accent-blue);
+        color: white;
+        border: none;
+    }
+
+    .run-btn:hover {
+        background-color: #1473d4;
+    }
+
+    .submit-btn {
+        background-color: var(--accent-green);
+        color: white;
+        border: none;
+    }
+
+    .submit-btn:hover {
+        background-color: #218838;
+    }
+
+    .results-container {
+        background-color: var(--secondary-bg);
+        border-radius: 8px;
+        padding: 15px;
+        border: 1px solid var(--border-color);
+        max-height: 300px;
+        overflow-y: auto;
+    }
+
+    .results-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+    .results-title {
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    .test-case-selector {
+        background-color: var(--tertiary-bg);
+        color: var(--text-primary);
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        padding: 6px 10px;
+        font-size: 14px;
+    }
+
+    .test-case-result {
+        margin-bottom: 15px;
+    }
+
+    .test-case-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+    }
+
+    .test-case-status {
+        font-weight: 600;
+        padding: 4px 8px;
+        border-radius: 4px;
+    }
+
+    .status-passed {
+        background-color: var(--success-bg);
+        color: var(--accent-green);
+    }
+
+    .status-failed {
+        background-color: var(--error-bg);
+        color: var(--accent-red);
+    }
+
+    .io-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+
+    .io-box {
+        background-color: var(--tertiary-bg);
+        border-radius: 4px;
+        padding: 10px;
+    }
+
+    .io-title {
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 6px;
+        color: var(--accent-blue);
+    }
+
+    .io-content {
+        font-family: monospace;
+        font-size: 13px;
+        white-space: pre-wrap;
+    }
+
+    .error-message {
+        color: var(--accent-red);
+        font-family: monospace;
+        font-size: 13px;
+        white-space: pre-wrap;
+    }
+
+    .performance-stats {
+        display: flex;
+        gap: 20px;
+        margin-top: 10px;
+        font-size: 14px;
+    }
+
+    .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .problem-header {
+        margin-bottom: 20px;
+    }
+
+    .problem-title {
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+
+    .problem-meta {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .difficulty-badge {
+        padding: 4px 10px;
+        border-radius: 4px;
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    .difficulty-easy {
+        background-color: rgba(16, 185, 129, 0.1);
+        color: var(--accent-green);
+    }
+
+    .difficulty-medium {
+        background-color: rgba(245, 158, 11, 0.1);
+        color: var(--accent-yellow);
+    }
+
+    .difficulty-hard {
+        background-color: rgba(239, 68, 68, 0.1);
+        color: var(--accent-red);
+    }
+
+    .problem-content {
+        margin-top: 20px;
+    }
+
+    .section-title {
+        font-size: 18px;
+        font-weight: 600;
+        margin: 20px 0 10px;
+        color: var(--accent-blue);
+    }
+
+    .constraints-list {
+        padding-left: 20px;
+    }
+
+    .constraints-list li {
+        margin-bottom: 6px;
+    }
+
+    .example-card {
+        background-color: var(--tertiary-bg);
+        border-radius: 6px;
+        padding: 12px;
+        margin-bottom: 15px;
+        border-left: 3px solid var(--accent-blue);
+    }
+
+    .example-header {
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+
+    pre {
+        background-color: var(--code-bg);
+        padding: 10px;
+        border-radius: 4px;
+        overflow-x: auto;
+        font-family: monospace;
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
+    @media (max-width: 1024px) {
+        .solve-container {
+            grid-template-columns: 1fr;
+            height: auto;
+        }
+
+        .problem-panel {
+            max-height: 400px;
+        }
+    }
+</style>
+
+<div class="solve-container">
+    <!-- Problem Description Panel -->
+    <div class="problem-panel">
+        <div class="problem-header">
+            <h1 class="problem-title">{{ problem.title }}</h1>
+            <div class="problem-meta">
+                <span class="difficulty-badge difficulty-{{ problem.difficulty|lower }}">
+                    {{ problem.difficulty }}
+                </span>
+                <span>Time Limit: {{ problem.time_limit }}s</span>
+                <span>Memory Limit: {{ problem.memory_limit }}MB</span>
+            </div>
+        </div>
+
+        <div class="problem-content">
+            {{ problem.description|linebreaks }}
+
+            <h3 class="section-title">Constraints</h3>
+            <ul class="constraints-list">
+                {% for constraint in problem.constraints_list %}
+                <li>{{ constraint }}</li>
+                {% endfor %}
+            </ul>
+
+            <h3 class="section-title">Examples</h3>
+            <div class="example-card">
+                <div class="example-header">Example 1:</div>
+                <div>
+                    <div class="io-title">Input:</div>
+                    <pre>{{ problem.sample_input }}</pre>
+                </div>
+                <div>
+                    <div class="io-title">Output:</div>
+                    <pre>{{ problem.sample_output }}</pre>
+                </div>
+                {% if problem.sample_explanation %}
+                <div>
+                    <div class="io-title">Explanation:</div>
+                    <p>{{ problem.sample_explanation }}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Code Editor Panel -->
+    <div class="editor-panel">
+        <form method="POST" action="{% url 'runcode' problem.id %}" id="code-form">
+            {% csrf_token %}
+            <div class="editor-container">
+                <div class="editor-header">
+                    <select name="language" id="language" class="language-selector">
+                        <option value="python" {% if language == "python" %}selected{% endif %}>Python3</option>
+                        <option value="javascript" {% if language == "javascript" %}selected{% endif %}>JavaScript</option>
+                        <option value="java">Java</option>
+                        <option value="cpp">C++</option>
+                    </select>
+                </div>
+
+                <textarea id="codearea" name="codearea">{{ code }}</textarea>
+            </div>
+
+            <div class="editor-actions">
+                <button type="submit" class="run-btn" name="action" value="run">
+                    <i class="fas fa-play"></i> Run Code
+                </button>
+                <button type="submit" class="submit-btn" name="action" value="submit">
+                    <i class="fas fa-check"></i> Submit
+                </button>
+            </div>
+        </form>
+
+        {% if results %}
+        <div class="results-container">
+            <div class="results-header">
+                <h3 class="results-title">Test Results</h3>
+                <select class="test-case-selector">
+                    {% for result in results %}
+                    <option value="{{ forloop.counter0 }}">Test Case {{ forloop.counter }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            {% for result in results %}
+            <div class="test-case-result" data-test-case="{{ forloop.counter0 }}" {% if not forloop.first %}style="display: none;"{% endif %}>
+                <div class="test-case-header">
+                    <span>Test Case {{ forloop.counter }}</span>
+                    <span class="test-case-status {% if result.passed %}status-passed{% else %}status-failed{% endif %}">
+                        {% if result.passed %}Passed{% else %}Failed{% endif %}
+                    </span>
+                </div>
+
+                <div class="io-container">
+                    <div class="io-box">
+                        <div class="io-title">Input</div>
+                        <div class="io-content">{{ result.input }}</div>
+                    </div>
+                    <div class="io-box">
+                        <div class="io-title">Expected Output</div>
+                        <div class="io-content">{{ result.expected }}</div>
+                    </div>
+                </div>
+
+                <div class="io-box">
+                    <div class="io-title">Your Output</div>
+                    <div class="io-content">{{ result.output }}</div>
+                </div>
+
+                {% if result.error %}
+                <div class="io-box">
+                    <div class="io-title">Error</div>
+                    <div class="error-message">{{ result.error }}</div>
+                </div>
+                {% endif %}
+
+                <div class="performance-stats">
+                    <div class="stat-item">
+                        <i class="fas fa-clock"></i>
+                        <span>Runtime: {{ result.execution_time|floatformat:2 }}ms</span>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-memory"></i>
+                        <span>Memory: {{ result.memory_used|floatformat:2 }}MB</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize CodeMirror
+    const codearea = document.getElementById('codearea');
+    const languageSelector = document.getElementById('language');
+
+    const editor = CodeMirror.fromTextArea(codearea, {
+        mode: 'python',
+        theme: 'dracula',
+        lineNumbers: true,
+        indentUnit: 4,
+        tabSize: 4,
+        lineWrapping: true,
+        autoCloseBrackets: true,
+        matchBrackets: true,
+        extraKeys: {
+            'Tab': function(cm) {
+                if (cm.getMode().name === 'null') {
+                    cm.execCommand('insertTab');
+                } else {
+                    if (cm.somethingSelected()) {
+                        cm.execCommand('indentMore');
+                    } else {
+                        cm.execCommand('insertSoftTab');
+                    }
+                }
+            },
+            'Shift-Tab': function(cm) { cm.execCommand('indentLess'); }
+        }
+    });
+
+    // Change editor mode based on language selection
+    languageSelector.addEventListener('change', function() {
+        let mode;
+        switch(this.value) {
+            case 'python':
+                mode = 'python';
+                break;
+            case 'javascript':
+                mode = 'javascript';
+                break;
+            case 'java':
+            case 'cpp':
+                mode = 'text/x-java';
+                break;
+            default:
+                mode = 'python';
+        }
+        editor.setOption('mode', mode);
+    });
+
+    // Test case selector functionality
+    const testCaseSelector = document.querySelector('.test-case-selector');
+    if (testCaseSelector) {
+        testCaseSelector.addEventListener('change', function() {
+            document.querySelectorAll('.test-case-result').forEach(el => {
+                el.style.display = 'none';
+            });
+            document.querySelector(`.test-case-result[data-test-case="${this.value}"]`).style.display = 'block';
+        });
+    }
+
+    // Form submission for different actions
+    const codeForm = document.getElementById('code-form');
+    if (codeForm) {
+        codeForm.addEventListener('submit', function(e) {
+            // Update textarea with editor content before submission
+            editor.save();
+        });
+    }
+});
+</script>
+
+{% endblock %}

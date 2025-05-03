@@ -1,0 +1,307 @@
+{% extends 'mainapp/base.html' %}
+{% block content %}
+
+<style>
+  /* User Profile Container */
+  .profile-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+    color: var(--text-primary);
+  }
+  
+  /* Profile Header */
+  .profile-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+  }
+  
+  .profile-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 2rem;
+    border: 4px solid var(--accent);
+  }
+  
+  .profile-info h1 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .profile-rank {
+    display: inline-block;
+    background-color: var(--bg-tertiary);
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+  
+  .profile-bio {
+    color: var(--text-secondary);
+    max-width: 600px;
+  }
+  
+  /* Stats Grid */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  
+  .stat-card {
+    background-color: var(--bg-secondary);
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .stat-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--accent);
+  }
+  
+  .stat-label {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+  }
+  
+  /* Difficulty Chart */
+  .chart-container {
+    background-color: var(--bg-secondary);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .chart-title {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+  }
+  
+  /* Activity List */
+  .activity-list {
+    background-color: var(--bg-secondary);
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .activity-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--border-color);
+  }
+  
+  .activity-item:last-child {
+    border-bottom: none;
+  }
+  
+  .activity-problem {
+    font-weight: 500;
+  }
+  
+  .activity-meta {
+    display: flex;
+    align-items: center;
+  }
+  
+  .activity-time {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-right: 1rem;
+  }
+  
+  .difficulty-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+  
+  .badge-easy {
+    background-color: rgba(16, 185, 129, 0.2);
+    color: #10b981;
+  }
+  
+  .badge-medium {
+    background-color: rgba(245, 158, 11, 0.2);
+    color: #f59e0b;
+  }
+  
+  .badge-hard {
+    background-color: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+  }
+  
+  /* Categories */
+  .categories-list {
+    background-color: var(--bg-secondary);
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .category-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border-color);
+  }
+  
+  .category-item:last-child {
+    border-bottom: none;
+  }
+  
+  .category-count {
+    background-color: var(--bg-tertiary);
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+  }
+  
+  /* Two Column Layout */
+  .profile-columns {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 2rem;
+  }
+  
+  @media (max-width: 768px) {
+    .profile-header {
+      flex-direction: column;
+      text-align: center;
+    }
+    
+    .profile-avatar {
+      margin-right: 0;
+      margin-bottom: 1.5rem;
+    }
+    
+    .profile-columns {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<div class="profile-container">
+  <div class="profile-header">
+    <img src="{{ user_profile.avatar.url }}" alt="{{ user_profile.user.username }}" class="profile-avatar">
+    <div class="profile-info">
+      <h1>{{ user_profile.user.username }}</h1>
+      <div class="profile-rank">Rank #{{ user_profile.rank }}</div>
+      {% if user_profile.bio %}
+      <p class="profile-bio">{{ user_profile.bio }}</p>
+      {% endif %}
+    </div>
+  </div>
+  
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-value">{{ user_profile.total_points }}</div>
+      <div class="stat-label">Total Points</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">{{ easy_count|add:medium_count|add:hard_count }}</div>
+      <div class="stat-label">Problems Solved</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">{{ user_profile.streak }}</div>
+      <div class="stat-label">Day Streak</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">{{ medium_count }}</div>
+      <div class="stat-label">Medium Solved</div>
+    </div>
+  </div>
+  
+  <div class="profile-columns">
+    <div>
+      <div class="chart-container">
+        <h3 class="chart-title">Difficulty Distribution</h3>
+        <canvas id="difficultyChart" height="250"></canvas>
+      </div>
+      
+      <div class="categories-list">
+        <h3 class="chart-title">Top Categories</h3>
+        {% for category in category_stats %}
+        <div class="category-item">
+          <span>{{ category.name }}</span>
+          <span class="category-count">{{ category.count }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    
+    <div class="activity-list">
+      <h3 class="chart-title">Recent Activity</h3>
+      {% for solution in recent_solutions %}
+      <div class="activity-item">
+        <div class="activity-problem">{{ solution.problem.title }}</div>
+        <div class="activity-meta">
+          <span class="activity-time">{{ solution.solved_at|timesince }} ago</span>
+          <span class="difficulty-badge 
+            {% if solution.problem.difficulty == 'Easy' %}badge-easy
+            {% elif solution.problem.difficulty == 'Medium' %}badge-medium
+            {% else %}badge-hard{% endif %}">
+            {{ solution.problem.difficulty }}
+          </span>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  // Difficulty Chart
+  const difficultyCtx = document.getElementById('difficultyChart').getContext('2d');
+  new Chart(difficultyCtx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Easy', 'Medium', 'Hard'],
+      datasets: [{
+        data: [{{ easy_count }}, {{ medium_count }}, {{ hard_count }}],
+        backgroundColor: [
+          'rgba(16, 185, 129, 0.8)',
+          'rgba(245, 158, 11, 0.8)',
+          'rgba(239, 68, 68, 0.8)'
+        ],
+        borderColor: [
+          'rgba(16, 185, 129, 1)',
+          'rgba(245, 158, 11, 1)',
+          'rgba(239, 68, 68, 1)'
+        ],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: {
+            color: 'var(--text-primary)'
+          }
+        }
+      }
+    }
+  });
+</script>
+
+{% endblock %}

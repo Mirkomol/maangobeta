@@ -1,0 +1,13 @@
+{% extends 'mainapp/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Add a Comment</h1>
+    <p>Commenting on: "{{ post.content }}"</p>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Submit Comment</button>
+    </form>
+</div>
+{% endblock %}

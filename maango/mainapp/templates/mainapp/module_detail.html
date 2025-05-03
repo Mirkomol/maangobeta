@@ -1,0 +1,44 @@
+{% extends 'mainapp/base.html' %}
+
+{% block content %}
+
+
+<style>
+    body {
+        background-color: #f8f9fa;
+        font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .module-content h2, .module-content h3 {
+        color: #0d6efd;
+        margin-top: 1.5rem;
+    }
+    .module-content ul {
+        padding-left: 2rem;
+        list-style-type: disc;
+    }
+    .module-content p {
+        margin-bottom: 1.2rem;
+    }
+</style>
+
+<div class="container my-5 p-5 bg-light rounded-4 shadow-sm">
+
+    <div class="text-center mb-5">
+        <h1 class="display-5 fw-bold text-primary">{{ module.title }}</h1>
+        <p class="text-muted fs-5">Module of <span class="text-dark">{{ module.course.title }}</span></p>
+    </div>
+
+    <div class="module-content text-secondary" style="line-height: 1.8; font-size: 1.1rem;">
+        {{ module.content|safe }}
+    </div>
+
+    <div class="d-flex justify-content-center mt-5">
+        <a href="{% url 'course_detail' module.course.id %}" class="btn btn-outline-primary px-5 py-2 rounded-pill">
+            ← Back to Course
+        </a>
+    </div>
+
+</div>
+
+
+{% endblock %}

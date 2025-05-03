@@ -1,0 +1,95 @@
+{% extends 'mainapp/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <style>
+        .edit-profile-container {
+            max-width: 700px;
+            margin: auto;
+            padding: 40px;
+            background: linear-gradient(135deg, #1e1e1e, #2c2c2c);
+            border-radius: 20px;
+            color: white;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        .edit-profile-header {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 25px;
+            text-align: center;
+            color: #03dac5;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: block;
+            color: #eeeeee;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 10px;
+            border: none;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid #03dac5;
+            box-shadow: 0 0 8px rgba(3, 218, 197, 0.6);
+        }
+
+        .btn-save {
+            background: #03dac5;
+            color: #121212;
+            font-size: 1rem;
+            font-weight: 600;
+            padding: 12px 25px;
+            border-radius: 30px;
+            border: none;
+            display: block;
+            margin: 30px auto 0;
+            transition: background 0.3s ease;
+        }
+
+        .btn-save:hover {
+            background: #0288d1;
+            color: white;
+        }
+    </style>
+
+    <div class="edit-profile-container">
+        <h1 class="edit-profile-header">Edit Your Profile</h1>
+
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="id_avatar">Avatar</label>
+                {{ form.avatar }}
+            </div>
+
+            <div class="form-group">
+                <label for="id_bio">Bio</label>
+                {{ form.bio }}
+            </div>
+
+            <button type="submit" class="btn btn-save">
+                <i class="fas fa-save"></i> Save Changes
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}
